@@ -1,54 +1,28 @@
-import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
-import { API_KEY } from "./config.js";
+// A chave de API não é mais necessária aqui, pois o backend cuidará disso.
 
-if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI") {
-    console.error("❌ API Key não configurada! Edite o arquivo config.js e insira sua chave.");
-}
-
-const genAI = new GoogleGenerativeAI(API_KEY);
-
-
-const modelos = [
-    'gemini-2.5-flash',     
-    'gemini-flash-latest', 
-    'gemini-2.5-flash-lite', 
-    'gemini-2.0-flash-001',  
-    'gemini-pro-latest'      
-];
-
-
-async function gerarConteudoComFallback(prompt) {
-    let ultimoErro = null;
-    
-    for (const nomeModelo of modelos) {
-        try {
-            const model = genAI.getGenerativeModel({ model: nomeModelo });
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            const text = response.text();
-            
-        
-            console.log(`✅ Modelo usado: ${nomeModelo}`);
-            return text;
-        } catch (error) {
-            ultimoErro = error;
-            console.warn(`⚠️ Modelo ${nomeModelo} falhou, tentando próximo...`);
-            continue;
-        }
+/**
+ * Função para chamar nosso próprio backend, que por sua vez chama a API do Google.
+ * @param {string} prompt O prompt a ser enviado para o modelo de IA.
+ * @returns {Promise<string>} O texto da resposta da IA.
+ */
+async function gerarConteudoPeloBackend(prompt) {
+    const response = await fetch('http://localhost:3000/api/busca', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+    });
+    if (!response.ok) {
+        throw new Error(`Erro na requisição ao backend: ${response.statusText}`);
     }
-    
-   
-    throw ultimoErro || new Error("Todos os modelos falharam");
+    const data = await response.json();
+    return data.text;
 }
 
 async function pesquisar() {
     const section = document.getElementById("resultados-pesquisa");
     const campoPesquisa = document.getElementById("campo-pesquisa").value.toLowerCase();
-
-    if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI") {
-        section.innerHTML = `<p class="mensagem-inicial">❌ **Erro de Configuração!**<br>Você precisa adicionar sua chave de API no arquivo <strong>config.js</strong> para que a busca funcione.</p>`;
-        return;
-    }
 
     if (!campoPesquisa) {
         section.innerHTML = `<p class="mensagem-inicial">Você precisa digitar o nome de uma criatura para consultar o grimório.</p>`;
@@ -66,8 +40,8 @@ async function pesquisar() {
         - "link": O link para a página da mascote no Wowhead (ex: https://www.wowhead.com/pt/battle-pet/nome-da-mascote).
         Se não encontrar nada, retorne um array JSON vazio [].
         NÃO inclua a formatação de código (como \`\`\`json) na sua resposta.`;
-
-        let text = await gerarConteudoComFallback(prompt);
+        
+        let text = await gerarConteudoPeloBackend(prompt);
 
         
         text = text.trim();
@@ -103,29 +77,13 @@ async function pesquisar() {
 
     } catch (error) {
         console.error("Erro ao buscar dados da API:", error);
-        let mensagemErro = "❌ Ocorreu um erro mágico! O portal para a API falhou.";
-        
-        if (error.message && error.message.includes("API_KEY")) {
-            mensagemErro = "❌ Erro de autenticação! Verifique se sua API Key está correta no arquivo config.js.";
-        } else if (error.message && error.message.includes("quota") || error.message && error.message.includes("quota")) {
-            mensagemErro = "❌ Limite de uso da API excedido. Tente novamente mais tarde.";
-        } else if (error.message && error.message.includes("model")) {
-            mensagemErro = "❌ Erro ao acessar o modelo. Verifique sua conexão e tente novamente.";
-        }
-        
-        section.innerHTML = `<p class="mensagem-inicial">${mensagemErro}<br><small>Detalhes no console (F12)</small></p>`;
+        section.innerHTML = `<p class="mensagem-inicial">❌ Ocorreu um erro mágico! O servidor não respondeu.<br>Verifique se o servidor está rodando (npm start) e tente novamente.</p>`;
     }
 }
 
 async function gerarEstrategia(nomePet, tipoPet, idElemento) {
     let divResposta = document.getElementById(idElemento);
 
-    if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI") {
-        divResposta.style.display = "block";
-        divResposta.innerHTML = "❌ Configure sua API Key no arquivo config.js para usar esta função.";
-        return;
-    }
-    
     divResposta.style.display = "block";
     divResposta.innerHTML = "🧙‍♂️ Consultando os espíritos ancestrais... (Aguarde)";
 
@@ -138,27 +96,16 @@ async function gerarEstrategia(nomePet, tipoPet, idElemento) {
         3. Uma dica tática rápida.
         Use emojis de RPG.`;
 
-        let texto = await gerarConteudoComFallback(prompt);
+        let texto = await gerarConteudoPeloBackend(prompt);
 
         texto = texto.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        
         texto = texto.replace(/\n/g, '<br>');
 
         divResposta.innerHTML = texto;
 
     } catch (error) {
         console.error("Erro ao gerar estratégia:", error);
-        let mensagemErro = "❌ Tem alguma coisa errada... Verifique sua API Key ou tente novamente.";
-        
-        if (error.message && error.message.includes("API_KEY")) {
-            mensagemErro = "❌ Erro de autenticação! Verifique se sua API Key está correta no arquivo config.js.";
-        } else if (error.message && error.message.includes("quota") || error.message && error.message.includes("quota")) {
-            mensagemErro = "❌ Limite de uso da API excedido. Tente novamente mais tarde.";
-        } else if (error.message && error.message.includes("model")) {
-            mensagemErro = "❌ Erro ao acessar o modelo. Verifique sua conexão e tente novamente.";
-        }
-        
-        divResposta.innerHTML = mensagemErro;
+        divResposta.innerHTML = "❌ Ocorreu um erro ao consultar os espíritos. Verifique se o servidor está online.";
     }
 }
 
