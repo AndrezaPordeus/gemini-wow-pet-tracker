@@ -6,7 +6,9 @@
  * @returns {Promise<string>} O texto da resposta da IA.
  */
 async function gerarConteudoPeloBackend(prompt) {
-    const response = await fetch('http://localhost:3000/api/busca', {
+    // Usa URL relativa para funcionar tanto em desenvolvimento quanto em produção
+    const apiUrl = '/api/busca';
+    const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -61,12 +63,15 @@ async function pesquisar() {
         let resultadosHtml = "";
         for (const dado of dados) {
             const idResposta = `resposta-${dado.titulo.replace(/\s+/g, '').toLowerCase()}`;
+            // Escapa aspas simples para evitar problemas no onclick
+            const tituloEscapado = dado.titulo.replace(/'/g, "\\'");
+            const tipoEscapado = dado.tipo.replace(/'/g, "\\'");
             resultadosHtml += `
                 <div class="item-resultado">
                     <h2><a href="${dado.link}" target="_blank">${dado.titulo} 🔗</a></h2>
                     <span class="tipo-pet">${dado.tipo}</span>
                     <p class="descricao-meta">${dado.descricao}</p>
-                    <button class="btn-ia" onclick="gerarEstrategia('${dado.titulo}', '${dado.tipo}', '${idResposta}')">
+                    <button class="btn-ia" onclick="gerarEstrategia('${tituloEscapado}', '${tipoEscapado}', '${idResposta}')">
                        🔮 Revelar Estratégia de Batalha
                     </button>
                     <div id="${idResposta}" class="box-resposta-ia"></div>
