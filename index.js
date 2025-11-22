@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 import { API_KEY } from "./config.js";
 
-if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI" || API_KEY.trim() === "") {
-    console.error("❌ API Key não configurada corretamente no arquivo config.js");
+if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI") {
+    console.error("❌ API Key não configurada! Edite o arquivo config.js e insira sua chave.");
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -45,7 +45,7 @@ async function pesquisar() {
     const section = document.getElementById("resultados-pesquisa");
     const campoPesquisa = document.getElementById("campo-pesquisa").value.toLowerCase();
 
-    if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI" || API_KEY.trim() === "") {
+    if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI") {
         section.innerHTML = `<p class="mensagem-inicial">❌ **Erro de Configuração!**<br>Você precisa adicionar sua chave de API no arquivo <strong>config.js</strong> para que a busca funcione.</p>`;
         return;
     }
@@ -120,7 +120,7 @@ async function pesquisar() {
 async function gerarEstrategia(nomePet, tipoPet, idElemento) {
     let divResposta = document.getElementById(idElemento);
 
-    if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI" || API_KEY.trim() === "") {
+    if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI") {
         divResposta.style.display = "block";
         divResposta.innerHTML = "❌ Configure sua API Key no arquivo config.js para usar esta função.";
         return;
