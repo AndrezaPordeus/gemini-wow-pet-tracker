@@ -1,23 +1,22 @@
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 import { API_KEY } from "./config.js";
 
-// Validação da API Key na inicialização
 if (!API_KEY || API_KEY === "SUA_CHAVE_API_VAI_AQUI" || API_KEY.trim() === "") {
     console.error("❌ API Key não configurada corretamente no arquivo config.js");
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-// Lista de modelos com fallback automático
+
 const modelos = [
-    'gemini-2.5-flash',     // Modelo mais atualizado e recomendado (confirmado funcionando)
-    'gemini-flash-latest',  // Versão "latest" do Flash
-    'gemini-2.5-flash-lite', // Versão lite mais leve
-    'gemini-2.0-flash-001',  // Versão estável do 2.0
-    'gemini-pro-latest'      // Fallback com versão "latest"
+    'gemini-2.5-flash',     
+    'gemini-flash-latest', 
+    'gemini-2.5-flash-lite', 
+    'gemini-2.0-flash-001',  
+    'gemini-pro-latest'      
 ];
 
-// Função auxiliar para tentar gerar conteúdo com fallback de modelos
+
 async function gerarConteudoComFallback(prompt) {
     let ultimoErro = null;
     
@@ -28,7 +27,7 @@ async function gerarConteudoComFallback(prompt) {
             const response = await result.response;
             const text = response.text();
             
-            // Log do modelo que funcionou (apenas no console)
+        
             console.log(`✅ Modelo usado: ${nomeModelo}`);
             return text;
         } catch (error) {
@@ -38,7 +37,7 @@ async function gerarConteudoComFallback(prompt) {
         }
     }
     
-    // Se todos os modelos falharam, lança o último erro
+   
     throw ultimoErro || new Error("Todos os modelos falharam");
 }
 
@@ -70,7 +69,7 @@ async function pesquisar() {
 
         let text = await gerarConteudoComFallback(prompt);
 
-        // Remove formatação de código markdown se presente
+        
         text = text.trim();
         if (text.startsWith("```json")) {
             text = text.replace(/^```json\s*/, "").replace(/\s*```$/, "");
