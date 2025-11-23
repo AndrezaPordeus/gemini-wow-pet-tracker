@@ -1,5 +1,3 @@
-// A chave de API não é mais necessária aqui, pois o backend cuidará disso.
-
 /**
  * Função para chamar nosso próprio backend, que por sua vez chama a API do Google.
  * @param {string} prompt O prompt a ser enviado para o modelo de IA.

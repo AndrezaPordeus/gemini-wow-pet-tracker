@@ -24,14 +24,14 @@
 }
 
 body {
-    /* A cor de fundo agora serve como fallback e para o gradiente */
+    
     background-color: var(--cor-fundo-escuro); 
-    /* Adiciona a imagem de fundo com um gradiente escuro por cima para dar opacidade */
+   
     background-image: linear-gradient(rgba(16, 18, 22, 0.85), rgba(16, 18, 22, 0.85)), url('assets/background.jpg');
-    background-size: cover; /* Faz a imagem cobrir toda a tela */
-    background-position: center; /* Centraliza a imagem */
-    background-attachment: fixed; /* Mantém a imagem fixa durante o scroll */
-    background-repeat: no-repeat; /* Evita que a imagem se repita */
+    background-size: cover; 
+    background-position: center; 
+    background-attachment: fixed; 
+    background-repeat: no-repeat; 
     color: var(--cor-texto-principal);
     font-family: 'Open Sans', sans-serif;
     display: flex;
@@ -102,7 +102,7 @@ button:hover {
     box-shadow: 0 0 10px #ff00004d;
 }
 
-/* Estilo dos Cards de Resultado */
+
 .item-resultado {
     background: var(--cor-fundo-secundario);
     border: 1px solid var(--cor-borda-cinza);
